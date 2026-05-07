@@ -1,429 +1,493 @@
 <!DOCTYPE html>
 <html>
 <head>
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Smart Attendance</title>
-
 <style>
 
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
+
+*{ box-sizing: border-box; margin:0; padding:0; }
+
 body{
-    margin:0;
-    background:#0f172a;
-    color:white;
-    font-family:Arial;
-    text-align:center;
+  background:#0a0f1e;
+  color:white;
+  font-family:'Syne', sans-serif;
+  text-align:center;
+  min-height:100vh;
 }
 
-.screen{
-    display:none;
-    padding:20px;
-}
-
-.active{
-    display:block;
-}
+.screen{ display:none; padding:20px; }
+.active{ display:block; }
 
 h1{
-    color:#38bdf8;
-    text-shadow:0 0 20px #38bdf8;
+  color:#38bdf8;
+  font-size:2rem;
+  font-weight:800;
+  letter-spacing:-1px;
+  text-shadow:0 0 30px rgba(56,189,248,0.5);
+  padding:20px 0 10px;
 }
 
 .box{
-    max-width:420px;
-    margin:auto;
-    margin-top:40px;
-    background:#111827;
-    padding:25px;
-    border-radius:20px;
-    box-shadow:0 0 25px rgba(0,0,0,0.5);
+  max-width:440px;
+  margin:30px auto;
+  background:#0f172a;
+  padding:28px;
+  border-radius:20px;
+  border:1px solid #1e293b;
+  box-shadow:0 0 40px rgba(0,0,0,0.6);
 }
 
 button{
-    width:100%;
-    padding:15px;
-    margin-top:15px;
-    border:none;
-    border-radius:12px;
-    background:#38bdf8;
-    color:black;
-    font-size:20px;
-    font-weight:bold;
-    cursor:pointer;
+  width:100%;
+  padding:14px;
+  margin-top:14px;
+  border:none;
+  border-radius:12px;
+  background:#38bdf8;
+  color:#0a0f1e;
+  font-size:17px;
+  font-weight:700;
+  font-family:'Syne',sans-serif;
+  cursor:pointer;
+  transition:all 0.2s;
 }
+
+button:hover{ background:#7dd3fc; transform:translateY(-1px); }
+
+button.danger{
+  background:#ef4444;
+  color:white;
+  width:auto;
+  padding:6px 14px;
+  font-size:13px;
+  margin-top:0;
+  border-radius:8px;
+}
+
+button.danger:hover{ background:#f87171; }
+
+button.secondary{
+  background:transparent;
+  border:1px solid #334155;
+  color:#94a3b8;
+  font-size:15px;
+}
+
+button.secondary:hover{ background:#1e293b; color:white; }
+
+button.toggle-btn{
+  background:#1e293b;
+  color:#38bdf8;
+  border:1px solid #38bdf8;
+  font-size:14px;
+  padding:10px;
+  margin-bottom:10px;
+}
+
+button.toggle-btn:hover{ background:#0f2944; }
 
 input{
-    width:90%;
-    padding:15px;
-    margin-top:15px;
-    border:none;
-    border-radius:12px;
-    background:#1e293b;
-    color:white;
-    font-size:18px;
+  width:100%;
+  padding:14px;
+  margin-top:14px;
+  border:1px solid #1e293b;
+  border-radius:12px;
+  background:#1e293b;
+  color:white;
+  font-size:17px;
+  font-family:'Syne',sans-serif;
+  outline:none;
+  transition:border 0.2s;
 }
 
+input:focus{ border-color:#38bdf8; }
+
 video{
-    width:100%;
-    border-radius:20px;
-    margin-top:20px;
-    border:3px solid #38bdf8;
+  width:100%;
+  border-radius:16px;
+  margin-top:18px;
+  border:2px solid #1e293b;
+}
+
+/* RECORDS GRID */
+#records{
+  max-width:900px;
+  margin:0 auto;
+  padding:0 10px 40px;
+}
+
+.records-toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  max-width:900px;
+  margin:0 auto 16px;
+  padding:0 10px;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+.records-toolbar h2{
+  font-size:1rem;
+  color:#64748b;
+  font-family:'Space Mono', monospace;
 }
 
 .card{
-    background:#1e293b;
-    margin-top:15px;
-    padding:15px;
-    border-radius:15px;
+  background:#0f172a;
+  margin-bottom:12px;
+  padding:14px 18px;
+  border-radius:14px;
+  border:1px solid #1e293b;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  text-align:left;
+  transition:border 0.2s;
 }
 
-img{
-    width:100%;
-    border-radius:15px;
+.card:hover{ border-color:#334155; }
+
+.card-thumb{
+  width:56px;
+  height:56px;
+  border-radius:10px;
+  object-fit:cover;
+  flex-shrink:0;
+  border:2px solid #1e293b;
+  cursor:pointer;
+  transition:transform 0.2s;
 }
+
+.card-thumb:hover{ transform:scale(1.05); }
+
+.card-thumb.hidden-img{
+  display:none;
+}
+
+.card-avatar{
+  width:56px;
+  height:56px;
+  border-radius:10px;
+  background:#1e293b;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  flex-shrink:0;
+}
+
+.card-info{ flex:1; min-width:0; }
+
+.card-roll{
+  font-size:1.1rem;
+  font-weight:700;
+  color:white;
+}
+
+.card-time{
+  font-size:0.78rem;
+  color:#64748b;
+  font-family:'Space Mono', monospace;
+  margin-top:3px;
+}
+
+.card-actions{ flex-shrink:0; }
 
 #status{
-    margin-top:15px;
-    color:#4ade80;
-    font-size:18px;
+  margin-top:14px;
+  color:#4ade80;
+  font-size:16px;
+  font-family:'Space Mono', monospace;
+}
+
+.loading{
+  color:#64748b;
+  font-family:'Space Mono', monospace;
+  padding:40px;
+}
+
+/* Modal for full image */
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.85);
+  z-index:999;
+  align-items:center;
+  justify-content:center;
+}
+
+.modal.open{ display:flex; }
+
+.modal img{
+  max-width:90vw;
+  max-height:85vh;
+  border-radius:16px;
+  border:2px solid #38bdf8;
+}
+
+.modal-close{
+  position:absolute;
+  top:20px;
+  right:20px;
+  background:#ef4444;
+  border:none;
+  color:white;
+  font-size:22px;
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  cursor:pointer;
+  font-weight:bold;
+  width:auto;
+  padding:6px 16px;
+  margin:0;
 }
 
 </style>
-
 </head>
-
 <body>
 
 <!-- HOME -->
-
 <div id="home" class="screen active">
-
-<h1>📸 Smart Attendance</h1>
-
-<div class="box">
-
-<button id="studentBtn">
-👨‍🎓 Student
-</button>
-
-<button id="teacherBtn">
-👨‍🏫 Teacher
-</button>
-
-</div>
-
+  <h1>📸 Smart Attendance</h1>
+  <div class="box">
+    <button id="studentBtn">👨‍🎓 Student</button>
+    <button id="teacherBtn" class="secondary">👨‍🏫 Teacher</button>
+  </div>
 </div>
 
 <!-- STUDENT -->
-
 <div id="studentScreen" class="screen">
-
-<h1>👨‍🎓 Student Attendance</h1>
-
-<div class="box">
-
-<input id="roll" placeholder="Enter Roll Number">
-
-<video id="video" autoplay playsinline></video>
-
-<button id="captureBtn">
-✅ Capture Attendance
-</button>
-
-<p id="status"></p>
-
-<button id="backStudent">
-⬅ Back
-</button>
-
-</div>
-
+  <h1>👨‍🎓 Mark Attendance</h1>
+  <div class="box">
+    <input id="roll" placeholder="Enter Roll Number">
+    <video id="video" autoplay playsinline></video>
+    <button id="captureBtn">✅ Capture Attendance</button>
+    <p id="status"></p>
+    <button id="backStudent" class="secondary">⬅ Back</button>
+  </div>
 </div>
 
 <!-- TEACHER LOGIN -->
-
 <div id="teacherScreen" class="screen">
-
-<h1>🔐 Teacher Login</h1>
-
-<div class="box">
-
-<input id="teacherCode" placeholder="Teacher Code">
-
-<button id="loginBtn">
-LOGIN
-</button>
-
-<button id="backTeacher">
-⬅ Back
-</button>
-
-</div>
-
+  <h1>🔐 Teacher Login</h1>
+  <div class="box">
+    <input id="teacherCode" placeholder="Teacher Code" type="password">
+    <button id="loginBtn">LOGIN</button>
+    <button id="backTeacher" class="secondary">⬅ Back</button>
+  </div>
 </div>
 
 <!-- TEACHER PANEL -->
-
 <div id="panelScreen" class="screen">
+  <h1>📋 Attendance Records</h1>
 
-<h1>📋 Attendance Records</h1>
+  <div class="records-toolbar">
+    <h2 id="recordCount">Loading...</h2>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+      <button class="toggle-btn" id="togglePhotos" style="width:auto;padding:8px 16px;">🖼 Hide Photos</button>
+      <button id="logoutBtn" class="secondary" style="width:auto;padding:8px 16px;">⬅ Logout</button>
+    </div>
+  </div>
 
-<div id="records"></div>
-
-<button id="logoutBtn">
-⬅ Logout
-</button>
-
+  <div id="records"></div>
 </div>
 
-<!-- SUPABASE -->
+<!-- FULL IMAGE MODAL -->
+<div class="modal" id="imageModal">
+  <button class="modal-close" id="closeModal">✕ Close</button>
+  <img id="modalImg" src="">
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
 
-/* SUPABASE */
+const SUPABASE_URL = "https://xrulbprsxrakvqdnfanj.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhydWxicHJzeHJha3ZxZG5mYW5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNjMwOTIsImV4cCI6MjA5MzczOTA5Mn0.kMktNM3dZPOnq1yqz5I6tsBY9CG9dbzZLGOdjBzbjP8";
+const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const SUPABASE_URL =
-"https://xrulbprsxrakvqdnfanj.supabase.co";
+const home          = document.getElementById("home");
+const studentScreen = document.getElementById("studentScreen");
+const teacherScreen = document.getElementById("teacherScreen");
+const panelScreen   = document.getElementById("panelScreen");
 
-const SUPABASE_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhydWxicHJzeHJha3ZxZG5mYW5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNjMwOTIsImV4cCI6MjA5MzczOTA5Mn0.kMktNM3dZPOnq1yqz5I6tsBY9CG9dbzZLGOdjBzbjP8";
+let showPhotos = true;
 
-const client =
-supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
-
-/* SCREENS */
-
-const home =
-document.getElementById("home");
-
-const studentScreen =
-document.getElementById("studentScreen");
-
-const teacherScreen =
-document.getElementById("teacherScreen");
-
-const panelScreen =
-document.getElementById("panelScreen");
-
-/* BUTTONS */
-
-document.getElementById("studentBtn")
-.onclick = async function(){
-
-    home.classList.remove("active");
-
-    studentScreen.classList.add("active");
-
-    startCamera();
+/* NAV */
+document.getElementById("studentBtn").onclick = async () => {
+  home.classList.remove("active");
+  studentScreen.classList.add("active");
+  startCamera();
 };
 
-document.getElementById("teacherBtn")
-.onclick = function(){
-
-    home.classList.remove("active");
-
-    teacherScreen.classList.add("active");
+document.getElementById("teacherBtn").onclick = () => {
+  home.classList.remove("active");
+  teacherScreen.classList.add("active");
 };
 
-document.getElementById("backStudent")
-.onclick = function(){
-
-    location.reload();
-};
-
-document.getElementById("backTeacher")
-.onclick = function(){
-
-    location.reload();
-};
-
-document.getElementById("logoutBtn")
-.onclick = function(){
-
-    location.reload();
-};
+document.getElementById("backStudent").onclick = () => location.reload();
+document.getElementById("backTeacher").onclick = () => location.reload();
+document.getElementById("logoutBtn").onclick   = () => location.reload();
 
 /* CAMERA */
-
-const video =
-document.getElementById("video");
+const video = document.getElementById("video");
 
 async function startCamera(){
-
-    try{
-
-        const stream =
-        await navigator.mediaDevices.getUserMedia({
-            video:true,
-            audio:false
-        });
-
-        video.srcObject = stream;
-
-    }catch(err){
-
-        alert("Camera permission denied");
-    }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video:true, audio:false });
+    video.srcObject = stream;
+  } catch(err) {
+    alert("Camera permission denied");
+  }
 }
 
 /* CAPTURE */
+document.getElementById("captureBtn").onclick = async () => {
+  const roll = document.getElementById("roll").value.trim();
+  if(!roll){ alert("Enter Roll Number"); return; }
 
-document.getElementById("captureBtn")
-.onclick = async function(){
+  const status = document.getElementById("status");
+  status.style.color = "#38bdf8";
+  status.innerText = "⏳ Uploading...";
 
-    const roll =
-    document.getElementById("roll").value;
+  const canvas = document.createElement("canvas");
+  canvas.width  = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext("2d").drawImage(video, 0, 0);
 
-    if(!roll){
+  const blob = await new Promise(r => canvas.toBlob(r, "image/png"));
+  const fileName = `${roll}_${Date.now()}.png`;
 
-        alert("Enter Roll Number");
-        return;
-    }
-
-    const canvas =
-    document.createElement("canvas");
-
-    canvas.width =
-    video.videoWidth;
-
-    canvas.height =
-    video.videoHeight;
-
-    const ctx =
-    canvas.getContext("2d");
-
-    ctx.drawImage(
-        video,
-        0,
-        0
-    );
-
-    const blob =
-    await new Promise(resolve =>
-        canvas.toBlob(resolve,"image/png")
-    );
-
-    const fileName =
-    `${roll}_${Date.now()}.png`;
-
-    /* UPLOAD IMAGE */
-
-    const { error } =
-    await client.storage
+  const { error } = await client.storage
     .from("attendance-images")
     .upload(fileName, blob);
 
-    if(error){
+  if(error){ alert(error.message); return; }
 
-        alert(error.message);
-        return;
-    }
+  const imageUrl = `${SUPABASE_URL}/storage/v1/object/public/attendance-images/${fileName}`;
 
-    /* IMAGE URL */
-
-    const imageUrl =
-`${SUPABASE_URL}/storage/v1/object/public/attendance-images/${fileName}`;
-
-    /* SAVE DATABASE */
-
-    const { error:dbError } =
-    await client
+  const { error:dbError } = await client
     .from("attendance")
-    .insert([
-        {
-            roll:roll,
-            time:new Date().toLocaleString(),
-            image:imageUrl
-        }
-    ]);
+    .insert([{ roll, time: new Date().toISOString(), image: imageUrl }]);
 
-    if(dbError){
+  if(dbError){ alert(dbError.message); return; }
 
-        alert(dbError.message);
-        return;
-    }
-
-    document.getElementById("status")
-    .innerText =
-    "✅ Attendance Uploaded!";
+  status.style.color = "#4ade80";
+  status.innerText = "✅ Attendance Marked!";
 };
 
 /* TEACHER LOGIN */
+document.getElementById("loginBtn").onclick = () => {
+  const code = document.getElementById("teacherCode").value;
+  if(code !== "teacher123"){ alert("Wrong Teacher Code"); return; }
+  teacherScreen.classList.remove("active");
+  panelScreen.classList.add("active");
+  loadAttendance();
+};
 
-document.getElementById("loginBtn")
-.onclick = async function(){
-
-    const code =
-    document.getElementById("teacherCode").value;
-
-    if(code !== "teacher123"){
-
-        alert("Wrong Teacher Code");
-        return;
-    }
-
-    teacherScreen.classList.remove("active");
-
-    panelScreen.classList.add("active");
-
-    loadAttendance();
+/* TOGGLE PHOTOS */
+document.getElementById("togglePhotos").onclick = () => {
+  showPhotos = !showPhotos;
+  document.getElementById("togglePhotos").innerText = showPhotos ? "🖼 Hide Photos" : "🖼 Show Photos";
+  document.querySelectorAll(".card-thumb").forEach(img => {
+    img.classList.toggle("hidden-img", !showPhotos);
+  });
+  document.querySelectorAll(".card-avatar").forEach(av => {
+    av.style.display = showPhotos ? "none" : "flex";
+  });
 };
 
 /* LOAD RECORDS */
-
 async function loadAttendance(){
+  const records = document.getElementById("records");
+  records.innerHTML = `<p class="loading">⏳ Loading records...</p>`;
 
-    const records =
-    document.getElementById("records");
-
-    records.innerHTML =
-    "<h2>Loading...</h2>";
-
-    const { data, error } =
-    await client
+  const { data, error } = await client
     .from("attendance")
     .select("*")
-    .order("id",{ascending:false});
+    .order("id", { ascending:false });
 
-    if(error){
+  if(error){ records.innerHTML = `<p class="loading">❌ Error loading records</p>`; return; }
 
-        records.innerHTML =
-        "<h2>Error Loading</h2>";
+  document.getElementById("recordCount").innerText = `${data.length} record${data.length !== 1 ? 's' : ''}`;
+  records.innerHTML = "";
 
-        return;
-    }
-
-    records.innerHTML = "";
-
-    data.forEach(item=>{
-
-        records.innerHTML += `
-
-        <div class="card">
-
-            <h3>
-            🎓 Roll: ${item.roll}
-            </h3>
-
-            <p>
-            ⏰ ${item.time}
-            </p>
-
-            <img src="${item.image}">
-
-        </div>
-
-        `;
+  data.forEach(item => {
+    const time = new Date(item.time).toLocaleString('en-IN', {
+      day:'2-digit', month:'short', year:'numeric',
+      hour:'2-digit', minute:'2-digit'
     });
+
+    const card = document.createElement("div");
+    card.className = "card";
+    card.id = `card-${item.id}`;
+    card.innerHTML = `
+      <img class="card-thumb ${showPhotos ? '' : 'hidden-img'}"
+           src="${item.image}"
+           title="Click to enlarge"
+           data-src="${item.image}">
+      <div class="card-avatar" style="display:${showPhotos ? 'none' : 'flex'}">🎓</div>
+      <div class="card-info">
+        <div class="card-roll">🎓 Roll: ${item.roll}</div>
+        <div class="card-time">⏰ ${time}</div>
+      </div>
+      <div class="card-actions">
+        <button class="danger" onclick="deleteRecord(${item.id}, '${item.image}')">🗑 Delete</button>
+      </div>
+    `;
+
+    // click image to open modal
+    card.querySelector(".card-thumb").onclick = function(){
+      document.getElementById("modalImg").src = this.dataset.src;
+      document.getElementById("imageModal").classList.add("open");
+    };
+
+    records.appendChild(card);
+  });
 }
 
-</script>
+/* DELETE */
+async function deleteRecord(id, imageUrl){
+  if(!confirm("Delete this attendance record?")) return;
 
+  // delete from DB
+  const { error } = await client
+    .from("attendance")
+    .delete()
+    .eq("id", id);
+
+  if(error){ alert("Delete failed: " + error.message); return; }
+
+  // delete image from storage
+  const fileName = imageUrl.split("/attendance-images/")[1];
+  if(fileName){
+    await client.storage.from("attendance-images").remove([fileName]);
+  }
+
+  // remove card from UI
+  const card = document.getElementById(`card-${id}`);
+  if(card) card.remove();
+
+  // update count
+  const remaining = document.querySelectorAll(".card").length;
+  document.getElementById("recordCount").innerText = `${remaining} record${remaining !== 1 ? 's' : ''}`;
+}
+
+/* MODAL */
+document.getElementById("closeModal").onclick = () => {
+  document.getElementById("imageModal").classList.remove("open");
+};
+
+document.getElementById("imageModal").onclick = (e) => {
+  if(e.target === document.getElementById("imageModal")){
+    document.getElementById("imageModal").classList.remove("open");
+  }
+};
+
+</script>
 </body>
 </html>
