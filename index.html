@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Smart Attendance</title>
 
 <style>
@@ -9,8 +11,8 @@
 body{
     margin:0;
     background:#0f172a;
-    font-family:Arial;
     color:white;
+    font-family:Arial;
     text-align:center;
 }
 
@@ -25,7 +27,7 @@ body{
 
 h1{
     color:#38bdf8;
-    text-shadow:0 0 15px #38bdf8;
+    text-shadow:0 0 20px #38bdf8;
 }
 
 .box{
@@ -45,22 +47,18 @@ button{
     border:none;
     border-radius:12px;
     background:#38bdf8;
+    color:black;
     font-size:20px;
     font-weight:bold;
     cursor:pointer;
-    transition:0.2s;
-}
-
-button:hover{
-    transform:scale(1.03);
 }
 
 input{
     width:90%;
     padding:15px;
+    margin-top:15px;
     border:none;
     border-radius:12px;
-    margin-top:15px;
     background:#1e293b;
     color:white;
     font-size:18px;
@@ -73,16 +71,15 @@ video{
     border:3px solid #38bdf8;
 }
 
-img{
-    width:100%;
-    border-radius:15px;
-    margin-top:10px;
-}
-
 .card{
     background:#1e293b;
-    margin:15px;
+    margin-top:15px;
     padding:15px;
+    border-radius:15px;
+}
+
+img{
+    width:100%;
     border-radius:15px;
 }
 
@@ -93,30 +90,34 @@ img{
 }
 
 </style>
+
 </head>
 
 <body>
 
 <!-- HOME -->
+
 <div id="home" class="screen active">
 
 <h1>📸 Smart Attendance</h1>
 
 <div class="box">
 
-<button onclick="openStudent()">
+<button id="studentBtn">
 👨‍🎓 Student
 </button>
 
-<button onclick="openTeacher()">
+<button id="teacherBtn">
 👨‍🏫 Teacher
 </button>
 
 </div>
+
 </div>
 
 <!-- STUDENT -->
-<div id="student" class="screen">
+
+<div id="studentScreen" class="screen">
 
 <h1>👨‍🎓 Student Attendance</h1>
 
@@ -126,70 +127,132 @@ img{
 
 <video id="video" autoplay playsinline></video>
 
-<button onclick="captureAttendance()">
-✅ Mark Attendance
+<button id="captureBtn">
+✅ Capture Attendance
 </button>
 
 <p id="status"></p>
 
-<button onclick="goHome()">
+<button id="backStudent">
 ⬅ Back
 </button>
 
 </div>
+
 </div>
 
 <!-- TEACHER LOGIN -->
-<div id="teacherLogin" class="screen">
+
+<div id="teacherScreen" class="screen">
 
 <h1>🔐 Teacher Login</h1>
 
 <div class="box">
 
-<input id="teacherCode" placeholder="Enter Teacher Code">
+<input id="teacherCode" placeholder="Teacher Code">
 
-<button onclick="checkTeacherCode()">
+<button id="loginBtn">
 LOGIN
 </button>
 
-<button onclick="goHome()">
+<button id="backTeacher">
 ⬅ Back
 </button>
 
 </div>
+
 </div>
 
 <!-- TEACHER PANEL -->
-<div id="teacherPanel" class="screen">
+
+<div id="panelScreen" class="screen">
 
 <h1>📋 Attendance Records</h1>
 
 <div id="records"></div>
 
-<button onclick="goHome()">
+<button id="logoutBtn">
 ⬅ Logout
 </button>
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<!-- SUPABASE -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
 
-/* 🔥 YOUR SUPABASE INFO */
+/* SUPABASE */
+
 const SUPABASE_URL =
 "https://xrulbprsxrakvqdnfanj.supabase.co";
 
 const SUPABASE_KEY =
 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhydWxicHJzeHJha3ZxZG5mYW5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNjMwOTIsImV4cCI6MjA5MzczOTA5Mn0.kMktNM3dZPOnq1yqz5I6tsBY9CG9dbzZLGOdjBzbjP8";
 
-const supabase = window.supabase.createClient(
+const client =
+supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
 );
 
+/* SCREENS */
+
+const home =
+document.getElementById("home");
+
+const studentScreen =
+document.getElementById("studentScreen");
+
+const teacherScreen =
+document.getElementById("teacherScreen");
+
+const panelScreen =
+document.getElementById("panelScreen");
+
+/* BUTTONS */
+
+document.getElementById("studentBtn")
+.onclick = async function(){
+
+    home.classList.remove("active");
+
+    studentScreen.classList.add("active");
+
+    startCamera();
+};
+
+document.getElementById("teacherBtn")
+.onclick = function(){
+
+    home.classList.remove("active");
+
+    teacherScreen.classList.add("active");
+};
+
+document.getElementById("backStudent")
+.onclick = function(){
+
+    location.reload();
+};
+
+document.getElementById("backTeacher")
+.onclick = function(){
+
+    location.reload();
+};
+
+document.getElementById("logoutBtn")
+.onclick = function(){
+
+    location.reload();
+};
+
 /* CAMERA */
-const video = document.getElementById("video");
+
+const video =
+document.getElementById("video");
 
 async function startCamera(){
 
@@ -197,9 +260,7 @@ async function startCamera(){
 
         const stream =
         await navigator.mediaDevices.getUserMedia({
-            video:{
-                facingMode:"user"
-            },
+            video:true,
             audio:false
         });
 
@@ -207,40 +268,14 @@ async function startCamera(){
 
     }catch(err){
 
-        alert("Camera access denied");
-
+        alert("Camera permission denied");
     }
 }
 
-/* SCREEN SYSTEM */
-function show(id){
+/* CAPTURE */
 
-    document.querySelectorAll(".screen")
-    .forEach(s=>s.classList.remove("active"));
-
-    document.getElementById(id)
-    .classList.add("active");
-}
-
-function openStudent(){
-
-    show("student");
-
-    startCamera();
-}
-
-function openTeacher(){
-
-    show("teacherLogin");
-}
-
-function goHome(){
-
-    location.reload();
-}
-
-/* CAPTURE ATTENDANCE */
-async function captureAttendance(){
+document.getElementById("captureBtn")
+.onclick = async function(){
 
     const roll =
     document.getElementById("roll").value;
@@ -254,14 +289,23 @@ async function captureAttendance(){
     const canvas =
     document.createElement("canvas");
 
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    canvas.width =
+    video.videoWidth;
 
-    const ctx = canvas.getContext("2d");
+    canvas.height =
+    video.videoHeight;
 
-    ctx.drawImage(video,0,0);
+    const ctx =
+    canvas.getContext("2d");
 
-    const blob = await new Promise(resolve =>
+    ctx.drawImage(
+        video,
+        0,
+        0
+    );
+
+    const blob =
+    await new Promise(resolve =>
         canvas.toBlob(resolve,"image/png")
     );
 
@@ -269,8 +313,9 @@ async function captureAttendance(){
     `${roll}_${Date.now()}.png`;
 
     /* UPLOAD IMAGE */
+
     const { error } =
-    await supabase.storage
+    await client.storage
     .from("attendance-images")
     .upload(fileName, blob);
 
@@ -280,13 +325,15 @@ async function captureAttendance(){
         return;
     }
 
-    /* GET IMAGE URL */
+    /* IMAGE URL */
+
     const imageUrl =
 `${SUPABASE_URL}/storage/v1/object/public/attendance-images/${fileName}`;
 
-    /* SAVE TO DATABASE */
+    /* SAVE DATABASE */
+
     const { error:dbError } =
-    await supabase
+    await client
     .from("attendance")
     .insert([
         {
@@ -305,38 +352,52 @@ async function captureAttendance(){
     document.getElementById("status")
     .innerText =
     "✅ Attendance Uploaded!";
-}
+};
 
 /* TEACHER LOGIN */
-function checkTeacherCode(){
+
+document.getElementById("loginBtn")
+.onclick = async function(){
 
     const code =
     document.getElementById("teacherCode").value;
 
-    if(code === "teacher123"){
-
-        show("teacherPanel");
-
-        loadAttendance();
-
-    }else{
+    if(code !== "teacher123"){
 
         alert("Wrong Teacher Code");
-
+        return;
     }
-}
 
-/* LOAD ATTENDANCE */
+    teacherScreen.classList.remove("active");
+
+    panelScreen.classList.add("active");
+
+    loadAttendance();
+};
+
+/* LOAD RECORDS */
+
 async function loadAttendance(){
 
+    const records =
+    document.getElementById("records");
+
+    records.innerHTML =
+    "<h2>Loading...</h2>";
+
     const { data, error } =
-    await supabase
+    await client
     .from("attendance")
     .select("*")
     .order("id",{ascending:false});
 
-    const records =
-    document.getElementById("records");
+    if(error){
+
+        records.innerHTML =
+        "<h2>Error Loading</h2>";
+
+        return;
+    }
 
     records.innerHTML = "";
 
@@ -346,9 +407,13 @@ async function loadAttendance(){
 
         <div class="card">
 
-            <h3>🎓 Roll: ${item.roll}</h3>
+            <h3>
+            🎓 Roll: ${item.roll}
+            </h3>
 
-            <p>⏰ ${item.time}</p>
+            <p>
+            ⏰ ${item.time}
+            </p>
 
             <img src="${item.image}">
 
