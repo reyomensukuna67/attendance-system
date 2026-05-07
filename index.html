@@ -1,82 +1,124 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Smart Attendance</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Attendance</title>
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
 
-  <style>
-    body{
-      margin:0;
-      background:#0f172a;
-      font-family:Arial;
-      color:white;
-      text-align:center;
-      padding:20px;
-    }
+body{
+    margin:0;
+    background:#0f172a;
+    font-family:Arial;
+    color:white;
+    text-align:center;
+}
 
-    h1{
-      color:#38bdf8;
-      font-size:40px;
-      text-shadow:0 0 20px #38bdf8;
-    }
+.screen{
+    display:none;
+    padding:20px;
+}
 
-    .box{
-      max-width:400px;
-      margin:auto;
-      background:#111827;
-      padding:25px;
-      border-radius:20px;
-      box-shadow:0 0 20px rgba(0,0,0,0.5);
-    }
+.active{
+    display:block;
+}
 
-    video{
-      width:100%;
-      border-radius:20px;
-      border:3px solid #38bdf8;
-      margin-top:20px;
-    }
+h1{
+    color:#38bdf8;
+    text-shadow:0 0 15px #38bdf8;
+}
 
-    input{
-      width:90%;
-      padding:15px;
-      margin-top:20px;
-      border:none;
-      border-radius:12px;
-      font-size:18px;
-      background:#1e293b;
-      color:white;
-    }
+.box{
+    max-width:420px;
+    margin:auto;
+    margin-top:40px;
+    background:#111827;
+    padding:25px;
+    border-radius:20px;
+    box-shadow:0 0 25px rgba(0,0,0,0.5);
+}
 
-    button{
-      margin-top:20px;
-      width:100%;
-      padding:15px;
-      border:none;
-      border-radius:12px;
-      background:#38bdf8;
-      color:black;
-      font-size:20px;
-      cursor:pointer;
-      font-weight:bold;
-      transition:0.2s;
-    }
+button{
+    width:100%;
+    padding:15px;
+    margin-top:15px;
+    border:none;
+    border-radius:12px;
+    background:#38bdf8;
+    font-size:20px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.2s;
+}
 
-    button:hover{
-      transform:scale(1.03);
-    }
+button:hover{
+    transform:scale(1.03);
+}
 
-    #status{
-      margin-top:20px;
-      font-size:20px;
-      color:#4ade80;
-    }
-  </style>
+input{
+    width:90%;
+    padding:15px;
+    border:none;
+    border-radius:12px;
+    margin-top:15px;
+    background:#1e293b;
+    color:white;
+    font-size:18px;
+}
+
+video{
+    width:100%;
+    border-radius:20px;
+    margin-top:20px;
+    border:3px solid #38bdf8;
+}
+
+img{
+    width:100%;
+    border-radius:15px;
+    margin-top:10px;
+}
+
+.card{
+    background:#1e293b;
+    margin:15px;
+    padding:15px;
+    border-radius:15px;
+}
+
+#status{
+    margin-top:15px;
+    color:#4ade80;
+    font-size:18px;
+}
+
+</style>
 </head>
 
 <body>
 
+<!-- HOME -->
+<div id="home" class="screen active">
+
 <h1>📸 Smart Attendance</h1>
+
+<div class="box">
+
+<button onclick="openStudent()">
+👨‍🎓 Student
+</button>
+
+<button onclick="openTeacher()">
+👨‍🏫 Teacher
+</button>
+
+</div>
+</div>
+
+<!-- STUDENT -->
+<div id="student" class="screen">
+
+<h1>👨‍🎓 Student Attendance</h1>
 
 <div class="box">
 
@@ -85,101 +127,235 @@
 <video id="video" autoplay playsinline></video>
 
 <button onclick="captureAttendance()">
-✅ Capture Attendance
+✅ Mark Attendance
 </button>
 
 <p id="status"></p>
 
+<button onclick="goHome()">
+⬅ Back
+</button>
+
+</div>
 </div>
 
-<canvas id="canvas" style="display:none;"></canvas>
+<!-- TEACHER LOGIN -->
+<div id="teacherLogin" class="screen">
+
+<h1>🔐 Teacher Login</h1>
+
+<div class="box">
+
+<input id="teacherCode" placeholder="Enter Teacher Code">
+
+<button onclick="checkTeacherCode()">
+LOGIN
+</button>
+
+<button onclick="goHome()">
+⬅ Back
+</button>
+
+</div>
+</div>
+
+<!-- TEACHER PANEL -->
+<div id="teacherPanel" class="screen">
+
+<h1>📋 Attendance Records</h1>
+
+<div id="records"></div>
+
+<button onclick="goHome()">
+⬅ Logout
+</button>
+
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <script>
 
-/* 🔥 PASTE YOUR SUPABASE INFO HERE */
-const SUPABASE_URL = "sb_publishable_aG7l7Kq3kEetIHSX4pnqvA_ppQIGr1A";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhydWxicHJzeHJha3ZxZG5mYW5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNjMwOTIsImV4cCI6MjA5MzczOTA5Mn0.kMktNM3dZPOnq1yqz5I6tsBY9CG9dbzZLGOdjBzbjP8";
+/* 🔥 YOUR SUPABASE INFO */
+const SUPABASE_URL =
+"https://xrulbprsxrakvqdnfanj.supabase.co";
+
+const SUPABASE_KEY =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhydWxicHJzeHJha3ZxZG5mYW5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNjMwOTIsImV4cCI6MjA5MzczOTA5Mn0.kMktNM3dZPOnq1yqz5I6tsBY9CG9dbzZLGOdjBzbjP8";
 
 const supabase = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
+    SUPABASE_URL,
+    SUPABASE_KEY
 );
 
 /* CAMERA */
 const video = document.getElementById("video");
 
-navigator.mediaDevices.getUserMedia({
-  video:true
-})
-.then(stream=>{
-  video.srcObject = stream;
-})
-.catch(err=>{
-  alert("Camera access denied");
-});
+async function startCamera(){
 
-/* CAPTURE */
+    try{
+
+        const stream =
+        await navigator.mediaDevices.getUserMedia({
+            video:{
+                facingMode:"user"
+            },
+            audio:false
+        });
+
+        video.srcObject = stream;
+
+    }catch(err){
+
+        alert("Camera access denied");
+
+    }
+}
+
+/* SCREEN SYSTEM */
+function show(id){
+
+    document.querySelectorAll(".screen")
+    .forEach(s=>s.classList.remove("active"));
+
+    document.getElementById(id)
+    .classList.add("active");
+}
+
+function openStudent(){
+
+    show("student");
+
+    startCamera();
+}
+
+function openTeacher(){
+
+    show("teacherLogin");
+}
+
+function goHome(){
+
+    location.reload();
+}
+
+/* CAPTURE ATTENDANCE */
 async function captureAttendance(){
 
-  const roll =
-  document.getElementById("roll").value;
+    const roll =
+    document.getElementById("roll").value;
 
-  if(!roll){
-    alert("Enter Roll Number");
-    return;
-  }
+    if(!roll){
 
-  const canvas =
-  document.getElementById("canvas");
+        alert("Enter Roll Number");
+        return;
+    }
 
-  const ctx = canvas.getContext("2d");
+    const canvas =
+    document.createElement("canvas");
 
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
 
-  ctx.drawImage(video,0,0);
+    const ctx = canvas.getContext("2d");
 
-  const blob = await new Promise(resolve =>
-    canvas.toBlob(resolve,"image/png")
-  );
+    ctx.drawImage(video,0,0);
 
-  const fileName =
-  `${roll}_${Date.now()}.png`;
+    const blob = await new Promise(resolve =>
+        canvas.toBlob(resolve,"image/png")
+    );
 
-  /* UPLOAD IMAGE */
-  const { error } = await supabase.storage
+    const fileName =
+    `${roll}_${Date.now()}.png`;
+
+    /* UPLOAD IMAGE */
+    const { error } =
+    await supabase.storage
     .from("attendance-images")
     .upload(fileName, blob);
 
-  if(error){
-    alert(error.message);
-    return;
-  }
+    if(error){
 
-  /* IMAGE URL */
-  const imageUrl =
+        alert(error.message);
+        return;
+    }
+
+    /* GET IMAGE URL */
+    const imageUrl =
 `${SUPABASE_URL}/storage/v1/object/public/attendance-images/${fileName}`;
 
-  /* SAVE DATABASE */
-  const { error:dbError } = await supabase
+    /* SAVE TO DATABASE */
+    const { error:dbError } =
+    await supabase
     .from("attendance")
     .insert([
-      {
-        roll:roll,
-        time:new Date().toLocaleString(),
-        image:imageUrl
-      }
+        {
+            roll:roll,
+            time:new Date().toLocaleString(),
+            image:imageUrl
+        }
     ]);
 
-  if(dbError){
-    alert(dbError.message);
-    return;
-  }
+    if(dbError){
 
-  document.getElementById("status").innerText =
-  "✅ Attendance Uploaded!";
+        alert(dbError.message);
+        return;
+    }
+
+    document.getElementById("status")
+    .innerText =
+    "✅ Attendance Uploaded!";
+}
+
+/* TEACHER LOGIN */
+function checkTeacherCode(){
+
+    const code =
+    document.getElementById("teacherCode").value;
+
+    if(code === "teacher123"){
+
+        show("teacherPanel");
+
+        loadAttendance();
+
+    }else{
+
+        alert("Wrong Teacher Code");
+
+    }
+}
+
+/* LOAD ATTENDANCE */
+async function loadAttendance(){
+
+    const { data, error } =
+    await supabase
+    .from("attendance")
+    .select("*")
+    .order("id",{ascending:false});
+
+    const records =
+    document.getElementById("records");
+
+    records.innerHTML = "";
+
+    data.forEach(item=>{
+
+        records.innerHTML += `
+
+        <div class="card">
+
+            <h3>🎓 Roll: ${item.roll}</h3>
+
+            <p>⏰ ${item.time}</p>
+
+            <img src="${item.image}">
+
+        </div>
+
+        `;
+    });
 }
 
 </script>
